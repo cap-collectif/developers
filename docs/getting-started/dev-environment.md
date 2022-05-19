@@ -39,51 +39,64 @@ _For developers using MacOS we use the Symfony CLI for a better & faster Develop
 git clone git@github.com:cap-collectif/cap-collectif.git
 ```
 
-Our repo is quite huge, so it will take some times…
-
 #### 2. Using our development CLI
 
-Cap Collectif is a huge repository using a complex infrastructure with many technologies. In order to unify our development experience between Linux, MacOS and our CI we implemented our custom CLI to simplify interaction with Docker containers.
+[Cap Collectif](https://github.com/cap-collectif/cap-collectif) is a huge repository using a complex infrastructure with many technologies. In order to unify our development experience between our CI, Linux and MacOS, we implemented a CLI to simplify our interactions with Docker containers.
 
-Inside `cap-collectif` directory, you can run several Fabric tasks, to list every available tasks use `fab -l`.
+Inside `cap-collectif` directory, you can run several Fabric tasks such as :
 
-Make sur to run `pipenv shell` first.
+```bash
+fab local.system.doctor
+```
+
+This task will dump the version of every dependency that you need ton install on your host.
+
+If Fabric tasks does not work, make sur to run `pipenv shell` first.
+
+In order to list every available tasks you can use `fab -l`.
 
 #### 3. Setup your environment variables
 
-We are going to run a command in order to generate a default `.env.local` file :
+We use environment variables a lot ! 
+
+You can generate a default `.env.local` file that contains the required variables to launch the repository :
 
 ```
 fab local.system.setup-env-var
 cat .env.local
 ```
 
-To enable some services like geolocation with Google Map you will need to insert some credentials instead of `INSERT_A_REAL_SECRET` values  in your `.env.local` file.
+To enable some services (like geolocation with Google Map) you will need to insert some credentials instead of `INSERT_A_REAL_SECRET` values  in your `.env.local` file.
 
 #### 4. Setup DNS and SSL
 
-Setup your development certificates and hostname (`capco.dev`, `capco.test` and `capco.prod`) :
+The development environment is accessible via HTTPS and the following hostnames : `capco.dev`, `capco.test` and `capco.prod`. That's why you need to setup some virtual hosts and certificates :
 
 ```bash
 fab local.system.configure-vhosts
 ```
 
-This will update your `/etc/hosts` file.
+This task will automatically update your `/etc/hosts` file.
 
 ```bash
 fab local.system.sign-ssl
 ```
 
-This will generate SSL certificates for your host machine.
+This task will generate all SSL certificates you need on your host machine.
 
 #### 5. Build and launch our docker infrastructure
 
+It's time to build and run our docker containers !
+
 First build the docker cache :
+
 ```bash
 fab local.infrastructures.build
 ```
 
-Now you can launch the docker stack :
+_It will take some time…_
+
+Then, launch all the docker containers :
 
 ```bash
 fab local.infrastructures.up
@@ -91,13 +104,13 @@ fab local.infrastructures.up
 
 #### 6. Install code dependencies
 
-_On Linux run :_
+_On Linux you can run this task :_
 
 ```bash
 fab local.system.deploy
 ```
 
-_On MacOS, we recommend to run individual tasks on your host :_
+_On MacOS, run all these individual tasks :_
 
 ```bash
 yarn install --purelockfile
@@ -109,7 +122,9 @@ fab local.app.rabbitmq-queues
 
 #### 7. Add some development data
 
-Let's add our development database with some fixtures :
+It's time to add some data !
+
+The following task will reset the database, setup the SQL schema and add some fixtures :
 
 ```bash
 fab local.database.generate
@@ -117,18 +132,50 @@ fab local.database.generate
 
 #### 8. Setup the frontend
 
+First, download up to date translation files :
+
 ```bash
-yarn trad # download up to date translation files
-yarn build-relay-schema # generate up to date relay files which are not committed
-yarn build:prod # generate up to date production js bundle
+yarn trad
 ```
 
-### MACOS Only
+Our frontend use relay that need some files which are not committed, generate them using :
 
-Configure proxy
+```bash
+yarn build-relay-schema
+```
 
-#### 9. Open your first page
+Finally we can build our JS bundle using Webpack :
 
-open https://capco.dev
+```bash
+yarn build
+```
 
-It should work ! In the next step we are going to explain how to work with every part of the stack.
+#### 9. Setup the MacOS http proxy
+
+_For MacOS users only :_
+
+The `fab local.infrastructures.up` launch the Symfony CLI proxy.
+
+But you need and extra step to make sure every requests to `capco.dev` goes true the Symfony CLI proxy.
+
+Run this command in a tab :
+
+```bash
+cd infrastructure; python -m http.server 80
+```
+
+It will start a simple HTTP server to expose a `proxy.pac` file, that we will use to proxy the requests.
+
+Update your proxys configuration (under "Network") with "Proxy auto config" and value `http://localhost/proxy.pac` and not Symfony's default one. **Make sur you do this for both Wifi and LAN**.
+
+_Some browsers require extra work :_
+
+On Google chrome go to `chrome://net-internals/#proxy`, click `Re-apply settings` to refresh and use the proxy.
+
+#### 10. Open your first page
+
+It's time to open your browser with : https://capco.dev 
+
+It should work ! 
+
+In the next steps of this tutorial, we are going to explain how to work with every part of the stack.
