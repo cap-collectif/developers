@@ -7,6 +7,8 @@ sidebar_position: 1
 We provide and environment for both Linux and MacOS.
 ### What you'll need
 
+- [Git](https://git-scm.com/)
+
 - [Docker](https://www.docker.com/get-started/) version 20 or above and [Docker compose](https://docs.docker.com/compose/) version 2.1 or above:
   - Check your docker version using `docker -v` ;
   - Check your docker-component version using `docker-compose -v` ;
@@ -33,7 +35,7 @@ _For developers using MacOS we use the Symfony CLI for a better & faster Develop
 
 ### Getting started
 
-#### 1. Clone the repository :
+#### 1. Clone the repository:
 
 ```bash
 git clone git@github.com:cap-collectif/cap-collectif.git
@@ -41,9 +43,9 @@ git clone git@github.com:cap-collectif/cap-collectif.git
 
 #### 2. Using our development CLI
 
-[Cap Collectif](https://github.com/cap-collectif/cap-collectif) is a huge repository using a complex infrastructure with many technologies. In order to unify our development experience between our CI, Linux and MacOS, we implemented a CLI to simplify our interactions with Docker containers.
+[Cap Collectif](https://github.com/cap-collectif/cap-collectif) is a huge repository using a complex infrastructure with many technologies. In order to unify as much as possible our development experience between CI, Linux and MacOS, we implemented a CLI to simplify our interactions with Docker containers.
 
-Inside `cap-collectif` directory, you can run several Fabric tasks such as :
+Inside `cap-collectif` directory, you can run several Fabric tasks such as:
 
 ```bash
 fab local.system.doctor
@@ -51,32 +53,48 @@ fab local.system.doctor
 
 This task will dump the version of every dependency that you need ton install on your host.
 
-If Fabric tasks does not work, make sur to run `pipenv shell` first.
+:::caution
+
+If running Fabric tasks does not work, make sur to run `pipenv shell` first.
+
+:::
+
+:::tip 
 
 In order to list every available tasks you can use `fab -l`.
+
+:::
 
 #### 3. Setup your environment variables
 
 We use environment variables a lot ! 
 
-You can generate a default `.env.local` file that contains the required variables to launch the repository :
+You can generate a default `.env.local` file that contains the required variables to launch the repository:
 
 ```
 fab local.system.setup-env-var
-cat .env.local
 ```
+
+:::info
 
 To enable some services (like geolocation with Google Map) you will need to insert some credentials instead of `INSERT_A_REAL_SECRET` values  in your `.env.local` file.
 
+<!-- TODO add some documentation… -->
+
+:::
+
 #### 4. Setup DNS and SSL
 
-The development environment is accessible via HTTPS and the following hostnames : `capco.dev`, `capco.test` and `capco.prod`. That's why you need to setup some virtual hosts and certificates :
+The development environment is only accessible via HTTPS and the following hostnames: `capco.dev`, `capco.test` and `capco.prod`. 
+
+That's why you need to setup some virtual hosts:
 
 ```bash
 fab local.system.configure-vhosts
 ```
 
 This task will automatically update your `/etc/hosts` file.
+
 
 ```bash
 fab local.system.sign-ssl
@@ -88,29 +106,30 @@ This task will generate all SSL certificates you need on your host machine.
 
 It's time to build and run our docker containers !
 
-First build the docker cache :
+First build the docker cache and launch all the docker containers:
 
 ```bash
 fab local.infrastructures.build
-```
-
-_It will take some time…_
-
-Then, launch all the docker containers :
-
-```bash
 fab local.infrastructures.up
 ```
 
+:::info
+
+The first time you run those tasks, it will take quite some time… You may want a coffee break ?
+
+:::
+
 #### 6. Install code dependencies
 
-_On Linux you can run this task :_
+You can run this task:
 
 ```bash
 fab local.system.deploy
 ```
 
-_On MacOS, run all these individual tasks :_
+:::tip
+
+For MacOS users, it's faster to run all those tasks on your host:
 
 ```bash
 yarn install --purelockfile
@@ -120,31 +139,51 @@ fab local.qa.compile-graphql
 fab local.app.rabbitmq-queues
 ```
 
+:::
+
 #### 7. Add some development data
 
 It's time to add some data !
 
-The following task will reset the database, setup the SQL schema and add some fixtures :
+The following task will create the database, setup the SQL schema, add some fixtures and populate our search indexes:
 
 ```bash
 fab local.database.generate
 ```
 
+:::tip 
+
+Use this task, every time you want to reset your database or take a fresh start.
+
+:::
+
 #### 8. Setup the frontend
 
-First, download up to date translation files :
+First, download the up to date translation files:
 
 ```bash
 yarn trad
 ```
 
-Our frontend use relay that need some files which are not committed, generate them using :
+:::caution
+
+Only Cap Collectif employees can add new translations right now.
+
+:::
+
+Before we can build our JS bundle, we need to generate some not committed files, run the compiler with:
 
 ```bash
 yarn build-relay-schema
 ```
 
-Finally we can build our JS bundle using Webpack :
+:::info
+
+Our frontend code use [Relay](https://relay.dev/) which requires a compiling step that read our `*.graphql` and `*.js` files to create some `__generated__` directories and `*.graphql.js` files.
+
+:::
+
+Finally we can run Webpack to build our JS bundle:
 
 ```bash
 yarn build
@@ -152,29 +191,41 @@ yarn build
 
 #### 9. Setup the MacOS http proxy
 
-_For MacOS users only :_
+_For MacOS users only:_
 
 The `fab local.infrastructures.up` launch the Symfony CLI proxy.
 
-But you need and extra step to make sure every requests to `capco.dev` goes true the Symfony CLI proxy.
+But you need and extra step to make sure every requests to `capco.dev` goes through the Symfony CLI proxy.
 
-Run this command in a tab :
+Run this command in a tab (you will need to keep it running):
 
 ```bash
 cd infrastructure; python -m http.server 80
 ```
 
+:::info
+
 It will start a simple HTTP server to expose a `proxy.pac` file, that we will use to proxy the requests.
 
-Update your proxys configuration (under "Network") with "Proxy auto config" and value `http://localhost/proxy.pac` and not Symfony's default one. **Make sur you do this for both Wifi and LAN**.
+:::
 
-_Some browsers require extra work :_
+Update your proxys configuration (under "Network") with "Proxy auto config" and value `http://localhost/proxy.pac`. 
 
-On Google chrome go to `chrome://net-internals/#proxy`, click `Re-apply settings` to refresh and use the proxy.
 
+:::tip
+
+Make sur to update your proxys configuration for both **Wifi** and **LAN**.
+
+:::
+
+:::caution Some browsers require extra work
+
+For Google chrome users, go to `chrome://net-internals/#proxy`, click `Re-apply settings` to apply the proxy.
+
+:::
 #### 10. Open your first page
 
-It's time to open your browser with : https://capco.dev 
+It's time to open your browser with: https://capco.dev 
 
 It should work ! 
 
