@@ -97,7 +97,7 @@ This task will automatically update your `/etc/hosts` file.
 
 
 ```bash
-fab local.system.sign-ssl
+fab local.system.generate-ssl
 ```
 
 This task will generate all SSL certificates you need on your host machine.
