@@ -129,7 +129,7 @@ The first time you run those tasks, it will take quite some time… You may want
 You can run this task:
 
 ```bash
-fab local.system.deploy
+fab local.app.deploy
 ```
 
 :::tip
