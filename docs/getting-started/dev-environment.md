@@ -19,9 +19,10 @@ We provide and environment for both Linux and MacOS.
 
 :::tip
 
-docker-compose is installed with docker engine but need some adjustment, run commands : 
+docker-compose is now included in docker engine, but our scripts still need `docker-compose` command.
 
-Download files corresponding to your environment https://github.com/docker/compose/releases/tag/v2.17.0 
+Check if a version corresponds to your environment on this page: https://github.com/docker/compose/releases/tag/v2.17.0 
+Run following commands (ajusting first url if needed):
 
 ```bash
 curl -L https://github.com/docker/compose/releases/download/v2.17.0/docker-compose-linux-x86_64 > docker-compose
