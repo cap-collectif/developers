@@ -16,6 +16,23 @@ We provide and environment for both Linux and MacOS.
 
   - Check your docker version using `docker -v` ;
   - Check your docker-component version using `docker-compose -v` ;
+
+:::tip
+
+docker-compose is now included in docker engine, but our scripts still need `docker-compose` command.
+
+Check if a version corresponds to your environment on this page: https://github.com/docker/compose/releases/tag/v2.17.0 
+Run following commands (ajusting first url if needed):
+
+```bash
+curl -L https://github.com/docker/compose/releases/download/v2.17.0/docker-compose-linux-x86_64 > docker-compose
+sudo mv docker-compose /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo chown root: /usr/local/bin/docker-compose
+```
+
+:::
+
   - If you are using MacOS we recommend using [Docker Desktop on Mac](https://docs.docker.com/desktop/mac/install/).
 
 - [Python](https://www.python.org/downloads/) version 3.9 or above, [pipenv](https://pypi.org/project/pipenv/) and [Fabric](https://www.fabfile.org/installing.html) 2.7 or above:
@@ -175,6 +192,10 @@ yarn trad
 Only Cap Collectif employees can add new translations right now.
 
 :::
+
+```bash
+yarn install
+```
 
 Before we can build our JS bundle, we need to generate some not committed files, run the compiler with:
 
