@@ -181,7 +181,13 @@ Use this task, every time you want to reset your database or take a fresh start.
 
 #### 8. Setup the frontend
 
-First, download the up to date translation files:
+First, install dependencies:
+
+```bash
+yarn install
+```
+
+Then, download the up to date translation files:
 
 ```bash
 yarn trad
@@ -192,10 +198,6 @@ yarn trad
 Only Cap Collectif employees can add new translations right now.
 
 :::
-
-```bash
-yarn install
-```
 
 Before we can build our JS bundle, we need to generate some not committed files, run the compiler with:
 
