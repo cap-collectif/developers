@@ -44,6 +44,13 @@ sudo chown root: /usr/local/bin/docker-compose
   - Check your NodeJS version using `node -v`.
   - Check your yarn version using `yarn -v`.
 
+:::caution If you have node version above 18
+When you build front for the first time you will have an error like that `Error: error:0308010C:digital envelope routines::unsupported`
+
+On Unix-like (Linux, macOS, etc..) set this env:
+`export NODE_OPTIONS=--openssl-legacy-provider`
+:::
+
 _For developers using MacOS we use the Symfony CLI for a better & faster Developer Experience. That's why we require MacOS users to install some PHP dependencies on the host, instead of using our docker container directly._
 
 - [PHP](https://www.php.net/) version 7.4 and [composer](https://getcomposer.org/) version 2.1 or above and [Symfony CLI](https://symfony.com/download) version 5.x or above:
@@ -51,6 +58,12 @@ _For developers using MacOS we use the Symfony CLI for a better & faster Develop
   - The following PHP extensions must be installed and enabled `redis`, `imagick`, `amqp`.
   - Check your composer version using `composer --version`.
   - Check you Symfony CLI version using `symfony -V`.
+
+:::caution If you try to install php 7.4 with brew the formula is no longer available, instead run:
+```bash
+brew tap shivammathur/php && brew install shivammathur/php/php@7.4 && brew link php@7.4
+```
+:::
 
 ### Getting started
 
