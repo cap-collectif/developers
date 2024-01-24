@@ -264,7 +264,20 @@ For Google chrome users, go to `chrome://net-internals/#proxy`, click `Re-apply 
 
 :::
 
-#### 10. Open your first page
+#### 10. Configure AC in your browser
+
+In Firefox:
+* Go to `about:preferences#privacy`
+* Search for "certificates"
+* Click "View Certificates..."
+* In the Certificate Manager, click the Authorities tab
+* Click the "Import" button to import your certificate
+  * Select `~/.local/share/mkcert/rootCA.pem` file
+  * You might be prompted to set the trust level upon importing the
+  certificate. Select identify websites.
+* Restart Firefox
+
+#### 11. Open your first page
 
 It's time to open your browser with: https://capco.dev
 
